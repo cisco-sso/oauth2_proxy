@@ -672,6 +672,14 @@ func (p *OAuthProxy) Authenticate(rw http.ResponseWriter, req *http.Request) int
 	}
 
 	if session == nil {
+		session, err = p.CheckRequestAuth(req)
+		if err != nil {
+			log.Printf("%s %s", remoteAddr, err)
+		}
+	}
+
+
+	if session == nil {
 		return http.StatusForbidden
 	}
 
@@ -755,4 +763,9 @@ func (p *OAuthProxy) CheckBearerAuth(value string) (*providers.SessionState, err
 		Email:       email,
 		User:        email,
 	}, nil
+}
+
+func (p *OAuthProxy) CheckRequestAuth(req *http.Request) (*providers.SessionState, error) {
+	// handle advanced validation
+	return p.provider.ValidateRequest(req)
 }
