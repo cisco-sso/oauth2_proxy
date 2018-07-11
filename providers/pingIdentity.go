@@ -64,6 +64,10 @@ func NewPingIdentityProvider(p *ProviderData) *PingIdentityProvider {
 func (p *PingIdentityProvider) ValidateRequest(req *http.Request) (*SessionState, error) {
 	auth := req.Header.Get("Authorization")
 
+	if auth == "" {
+		return nil, nil
+	}
+
 	parts := strings.SplitN(auth, " ", 2)
 
 	accessToken := parts[1]
