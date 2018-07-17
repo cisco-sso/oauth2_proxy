@@ -2,6 +2,7 @@ package providers
 
 import (
 	"github.com/bitly/oauth2_proxy/cookie"
+	"net/http"
 )
 
 type Provider interface {
@@ -15,6 +16,7 @@ type Provider interface {
 	RefreshSessionIfNeeded(*SessionState) (bool, error)
 	SessionFromCookie(string, *cookie.Cipher) (*SessionState, error)
 	CookieForSession(*SessionState, *cookie.Cipher) (string, error)
+	ValidateRequest(*http.Request) (*SessionState, error)
 }
 
 func New(provider string, p *ProviderData) Provider {
@@ -31,6 +33,8 @@ func New(provider string, p *ProviderData) Provider {
 		return NewGitLabProvider(p)
 	case "oidc":
 		return NewOIDCProvider(p)
+	case "ping":
+		return NewPingIdentityProvider(p)
 	default:
 		return NewGoogleProvider(p)
 	}
